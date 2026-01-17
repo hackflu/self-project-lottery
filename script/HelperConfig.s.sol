@@ -32,11 +32,11 @@ contract HelperConfig is Script, DefaultNetworkConfig{
         }
     }
 
-    function getConfig() public returns(NetworkConfig memory){
+    function getConfig() public view returns(NetworkConfig memory){
         return networkConfig[block.chainid];
     }
 
-    function getSepoliaNetworkConfig() internal returns(NetworkConfig memory sepoliaNetworkConfig) {
+    function getSepoliaNetworkConfig() internal pure returns(NetworkConfig memory sepoliaNetworkConfig) {
         sepoliaNetworkConfig = NetworkConfig({
             subscriptionId: 0,
             vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
@@ -48,7 +48,7 @@ contract HelperConfig is Script, DefaultNetworkConfig{
         });
     }
 
-    function getAnvilNetworkConfig() internal returns(NetworkConfig memory anvilNetworkConfig){
+    function getAnvilNetworkConfig() internal  returns(NetworkConfig memory anvilNetworkConfig){
         vm.startBroadcast();
         VRFCoordinatorV2_5Mock vrfmockCoordinator = new VRFCoordinatorV2_5Mock(BASE_FEE , GAS_PRICE ,WEI_PER_UNIT_LINK);
         uint256 subId = vrfmockCoordinator.createSubscription();

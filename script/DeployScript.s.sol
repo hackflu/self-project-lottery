@@ -25,7 +25,7 @@ contract DeployScript is Script {
         }else{
             fundSubscription.createFundSubscription(helperConfig, config.subscriptionId);
         }
-        console.log("The current account is ", config.account);
+        console.log("current account used in deploying is ", config.account);
         console.log("vrfCoord address generated : ",config.vrfCoordinator);
         console.log("Subid generated :",config.subscriptionId);
 

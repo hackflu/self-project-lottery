@@ -26,6 +26,7 @@ contract Subscription is Script {
     function run() public returns (uint256) {
         HelperConfig helperConfig = new HelperConfig();
         uint256 subId = createSubscription(helperConfig);
+        return subId;
     }
 }
 
