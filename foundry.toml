@@ -11,4 +11,7 @@ remappings = [
     '@foundry-devops/=lib/foundry-devops/src/',
     '@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/',
 ]
+[fuzz]
+runs = 5000
+fail_on_revert = false
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

@@ -44,6 +44,7 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
     mapping(address => PlayerState) private s_playerStateTrack; // track the player state
     mapping(address => uint256) private s_playerDeposited; // track player deposited in Game
     mapping(address => uint256) private s_playerGussed; // track played guessed number
+    mapping(uint256 => bool) private s_numberTaken;
     address private s_gameOperator;
     uint256 private s_entranceFee;
     uint256 private s_guessingRange;
@@ -60,7 +61,7 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
     event GameStarted(address indexed, uint256);
     event RequestIdGenerated(uint256);
     event GuessSubmitted(address indexed, uint256, uint256);
-    event Winner(address indexed , uint256);
+    event Winner(address indexed, uint256);
 
     ///////////////////////////////
     /////////// error /////////////
@@ -79,6 +80,9 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         uint256 resultValue,
         uint256 userGussed
     );
+    error TruePick__GussedNumOutOfRange();
+    error TruePick__NumberAlreadyTaken();
+
     ////////////////////////////////
     ///////// modifiers ////////////
     /////////////////////////////////
@@ -121,11 +125,17 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         if (msg.value < s_entranceFee) {
             revert TruePick__AmountIsLess();
         }
+        if (s_numberTaken[_numberGussed]) {
+            revert TruePick__NumberAlreadyTaken();
+        }
+        if (_numberGussed > s_guessingRange) {
+            revert TruePick__GussedNumOutOfRange();
+        }
         if (s_playerStateTrack[msg.sender] != PlayerState.NONE) {
             revert TruePick__PlayerAlreadyGussed();
         }
         s_playerDeposited[msg.sender] = msg.value;
-
+        s_numberTaken[_numberGussed] = true;
         s_playerStateTrack[msg.sender] = PlayerState.ENTERED;
         s_playerGussed[msg.sender] = _numberGussed;
         emit GuessSubmitted(msg.sender, msg.value, _numberGussed);
@@ -191,13 +201,11 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         }
         s_playerStateTrack[msg.sender] = PlayerState.NONE;
         uint256 totalReward = address(this).balance;
-        (bool success, ) = payable(msg.sender).call{
-            value: totalReward
-        }("");
+        (bool success, ) = payable(msg.sender).call{value: totalReward}("");
         if (!success) {
             revert TruePick__TransferredFailed();
         }
-        emit Winner(msg.sender , totalReward);
+        emit Winner(msg.sender, totalReward);
     }
 
     function getCurrentGameState() public view returns (uint256) {
@@ -224,18 +232,22 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         return uint256(s_playerStateTrack[_player]);
     }
 
-    function getAllRequest() public view returns(uint256){
+    function getAllRequest() public view returns (uint256) {
         return s_allRequests.length;
     }
 
-    function getRequestId() public view returns(uint256){
+    function getRequestId() public view returns (uint256) {
         return s_requestId;
     }
-    function getChoosedRandomValue() public view returns(uint256){
+    function getChoosedRandomValue() public view returns (uint256) {
         return s_resultValue;
     }
 
-    function totalAmountReward() public view returns(uint256){
+    function totalAmountReward() public view returns (uint256) {
         return address(this).balance;
+    }
+
+    function getEntranceFee() public view returns (uint256) {
+        return s_entranceFee;
     }
 }
