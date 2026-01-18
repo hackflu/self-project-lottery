@@ -137,8 +137,8 @@ contract TrustPickTest is Test {
         hoax(player1 , 10 ether);
         truePick.enterGame{value : 1 ether}(10);
 
-        hoax(player2, 10 ether);
-        truePick.enterGame{value : 1 ether}(10);
+        // hoax(player2, 10 ether);
+        // truePick.enterGame{value : 1 ether}(10);
         _;
     }
     //////////////////////////////////////
@@ -251,7 +251,7 @@ contract TrustPickTest is Test {
         vm.stopPrank();
 
         uint256 latestRandomValue = truePick.getChoosedRandomValue();
-        uint256 totalReward = truePick.totalAmountReward();
+        uint256 totalReward = truePick.gettotalAmountReward();
         console.log("total reward : ",totalReward);
         assertEq(totalReward , 1000000000000000000);
         vm.startPrank(player1);

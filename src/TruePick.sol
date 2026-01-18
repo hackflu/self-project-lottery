@@ -243,7 +243,7 @@ contract TruePick is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         return s_resultValue;
     }
 
-    function totalAmountReward() public view returns (uint256) {
+    function gettotalAmountReward() public view returns (uint256) {
         return address(this).balance;
     }
 
